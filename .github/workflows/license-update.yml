@@ -13,4 +13,4 @@ jobs:
   update-license-year:
     runs-on: ubuntu-latest
     steps:
-      - uses: LacusSolutions/.github/workflows/mit-license-update.yml@main
+      - uses: ./workflows/mit-license-update.yml
