@@ -34,7 +34,7 @@ jobs:
   update-license-year:
     runs-on: ubuntu-latest
     steps:
-      - uses: LacusSolutions/.github/workflows/mit-license-update.yml
+      - uses: LacusSolutions/.github/workflows/mit-license-update.yml@main
 
 ```
 
@@ -59,5 +59,5 @@ jobs:
   assign-author:
     runs-on: ubuntu-latest
     steps:
-      - uses: LacusSolutions/.github/workflows/self-assign-pr.yml
+      - uses: LacusSolutions/.github/workflows/self-assign-pr.yml@main
 ```
