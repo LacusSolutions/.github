@@ -1,0 +1,16 @@
+name: Update License Copyright
+
+on:
+  schedule:
+    - cron: '0 15 1 1 *' # Run every year on January 1st at 15:00 UTC
+  workflow_dispatch: # Allow manual triggering
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-license-year:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: LacusSolutions/.github/workflows/mit-license-update.yml
