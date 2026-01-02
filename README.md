@@ -28,13 +28,10 @@ on:
 
 jobs:
   update-license-year:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: LacusSolutions/.github/.github/workflows/mit-license-update.yml@main
-        permissions:
-          contents: write
-          pull-requests: write
-
+    uses: LacusSolutions/.github/.github/workflows/mit-license-update.yml@main
+    permissions:
+      contents: write
+      pull-requests: write
 ```
 
 ### Self-Assign Pull Request
@@ -53,9 +50,7 @@ on:
 
 jobs:
   assign-author:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: LacusSolutions/.github/.github/workflows/self-assign-pr.yml@main
-        permissions:
-          pull-requests: write
+    uses: LacusSolutions/.github/.github/workflows/self-assign-pr.yml@main
+    permissions:
+      pull-requests: write
 ```
