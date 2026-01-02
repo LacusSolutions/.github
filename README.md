@@ -26,15 +26,14 @@ on:
     - cron: '0 15 1 1 *' # Run every year on January 1st at 15:00 UTC
   workflow_dispatch: # Allow manual triggering
 
-permissions:
-  contents: write
-  pull-requests: write
-
 jobs:
   update-license-year:
     runs-on: ubuntu-latest
     steps:
       - uses: LacusSolutions/.github/workflows/mit-license-update.yml@main
+        permissions:
+          contents: write
+          pull-requests: write
 
 ```
 
@@ -52,12 +51,11 @@ on:
       - opened
       - reopened
 
-permissions:
-  pull-requests: write
-
 jobs:
   assign-author:
     runs-on: ubuntu-latest
     steps:
       - uses: LacusSolutions/.github/workflows/self-assign-pr.yml@main
+        permissions:
+          pull-requests: write
 ```
