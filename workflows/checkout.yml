@@ -1,5 +1,8 @@
 name: Checkout Branch
 
+on:
+  workflow_call: # Allow this workflow to be called by other workflows
+
 jobs:
   checkout:
     runs-on: ubuntu-latest

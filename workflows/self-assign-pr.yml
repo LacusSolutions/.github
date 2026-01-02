@@ -1,5 +1,8 @@
 name: Pull Request Self-Assignment
 
+on:
+  workflow_call: # Allow this workflow to be called by other workflows
+
 jobs:
   assign-author:
     runs-on: ubuntu-latest
