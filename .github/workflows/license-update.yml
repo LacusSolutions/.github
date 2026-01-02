@@ -7,7 +7,7 @@ on:
 
 jobs:
   update-license-year:
-    uses: LacusSolutions/.github/.github/workflows/mit-license-update.yml@main
+    uses: './.github/workflows/mit-license-update.yml'
     permissions:
       contents: write
       pull-requests: write
