@@ -1,0 +1,116 @@
+name: Update MIT License Copyright
+
+jobs:
+  files-to-update:
+    runs-on: ubuntu-latest
+    outputs:
+      licenses: ${{ steps.licenses-list.outputs.licenses }}
+    steps:
+      - name: Checkout `main` branch
+        uses: LacusSolutions/.github/workflows/checkout.yml
+
+      - name: Search and output license files
+        id: licenses-list
+        run: |
+          echo "🔍 Searching repository for MIT LICENSE files..."
+
+          LICENSES=()
+          while IFS= read -r license_path; do
+            if head -n 1 "$license_path" | grep -Fqx "MIT License"; then
+              LICENSES+=("$license_path")
+            fi
+          done < <(find . -type f -name "LICENSE" | sort)
+
+          echo "📝 ${#LICENSES[@]} MIT license files found:"
+          printf '  - %s\n' "${LICENSES[@]}"
+          printf -v licenses_json '"%s",' "${LICENSES[@]}"
+          licenses_json="[${licenses_json%,}]"
+          echo "licenses=$licenses_json" >> $GITHUB_OUTPUT
+
+  update-copyright-year:
+    needs: files-to-update
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout `main` branch
+        uses: LacusSolutions/.github/workflows/checkout.yml
+
+      - name: Get current year
+        id: year
+        run: echo "current=$(date +%Y)" >> $GITHUB_OUTPUT
+      - name: Iterate over license files and update copyright year
+        env:
+          LICENSES: ${{ needs.files-to-update.outputs.licenses }}
+        run: |
+          CURRENT_YEAR="${{ steps.year.outputs.current }}"
+
+          update_license() {
+            local file="$1"
+
+            if [[ ! -f "$file" ]]; then
+              echo "⚠️ File not found: \"$file\""
+              return
+            fi
+
+            # Extract the copyright pattern and update the year
+            # Supported patterns:
+            #   - Copyright (c) YYYY Author
+            #   - Copyright (c) YYYY-YYYY Author
+            sed -i -E "s/Copyright \(c\) ([0-9]{4})(-[0-9]{4})? /Copyright (c) \1-${CURRENT_YEAR} /g" "$file"
+            sed -i -E "s/Copyright \(c\) ${CURRENT_YEAR}-${CURRENT_YEAR} /Copyright (c) ${CURRENT_YEAR} /g" "$file"
+
+            echo "✅ License \"$file\" updated to $CURRENT_YEAR"
+          }
+
+          echo "📄 Processing license files..."
+          for license_path in $(echo "$LICENSES" | jq -r '.[]'); do
+            update_license "$license_path"
+          done
+
+          echo "All license files processed."
+
+      - name: Check for changes
+        id: changes
+        env:
+          LICENSES: ${{ needs.files-to-update.outputs.licenses }}
+        run: |
+          if git diff --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No changes detected in license files."
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Changes detected:"
+            git diff --stat
+
+            # Format licenses list as markdown for PR body
+            licenses_md=$(echo "$LICENSES" | jq -r '.[] | "- `\(.)`"')
+            {
+              echo "licenses_md<<EOF"
+              echo "$licenses_md"
+              echo "EOF"
+            } >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create pull request
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: LacusSolutions/.github/workflows/create-pr.yml
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base-branch: main
+          checkout-branch: chore/update-license-year-${{ steps.year.outputs.current }}
+          commit-message: 'chore: update license copyright year to ${{ steps.year.outputs.current }}'
+          title: 'Update license copyright year to ${{ steps.year.outputs.current }}'
+          body: |
+            ## 📅 License Copyright Update
+
+            This PR automatically updates the copyright year coverage in MIT license files to **${{ steps.year.outputs.current }}**.
+
+            ### Updated Files
+            ${{ steps.changes.outputs.licenses_md }}
+
+            ### Review Checklist
+            Please verify that:
+            - [ ] Years are correct in all files
+            - [ ] No files were improperly modified
+
+            ---
+            *This PR was automatically created by the license update workflow.*
