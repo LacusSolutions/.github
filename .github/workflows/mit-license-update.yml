@@ -10,7 +10,7 @@ jobs:
       licenses: ${{ steps.licenses-list.outputs.licenses }}
     steps:
       - name: Checkout `main` branch
-        uses: LacusSolutions/.github/workflows/checkout.yml@main
+        uses: LacusSolutions/.github/.github/workflows/checkout.yml@main
 
       - name: Search and output license files
         id: licenses-list
@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout `main` branch
-        uses: LacusSolutions/.github/workflows/checkout.yml@main
+        uses: LacusSolutions/.github/.github/workflows/checkout.yml@main
 
       - name: Get current year
         id: year
@@ -95,7 +95,7 @@ jobs:
 
       - name: Create pull request
         if: steps.changes.outputs.has_changes == 'true'
-        uses: LacusSolutions/.github/workflows/create-pr.yml@main
+        uses: LacusSolutions/.github/.github/workflows/create-pr.yml@main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           base-branch: main
