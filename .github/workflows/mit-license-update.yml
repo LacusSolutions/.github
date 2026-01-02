@@ -10,7 +10,9 @@ jobs:
       licenses: ${{ steps.licenses-list.outputs.licenses }}
     steps:
       - name: Checkout `main` branch
-        uses: LacusSolutions/.github/.github/workflows/checkout.yml@main
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          fetch-depth: 0
 
       - name: Search and output license files
         id: licenses-list
